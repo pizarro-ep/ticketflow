@@ -3,7 +3,7 @@
    <name>Flujo de Tickets</name>
    <key>ticketflow</key>
    <state>stable</state>
-   <logo>https://miweb.com/img/logo.png</logo>
+   <logo>https://raw.githubusercontent.com/tu_usuario/tu_repositorio/main/docs/logo.png</logo>
    <description>
       <short>
          <en>Plugin que extiende funcionalidades de GLPI</en>
