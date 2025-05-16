@@ -26,10 +26,5 @@
     "languages": {
       "es_ES": "Español"
     }
-  },
-  "autoload": {
-    "psr-4": {
-      "PluginTicketflow\\": "src/"
-    }
   }
 }
