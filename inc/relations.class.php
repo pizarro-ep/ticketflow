@@ -5,7 +5,7 @@
  */
 class PluginTicketflowRelations extends CommonDBTM
 {
-    public static $rightname = 'ticketflow';
+    public static $rightname =PLUGIN_TICKETFLOW_NAME;
 
     public static function getTypeName($nb = 0)
     {
@@ -80,7 +80,7 @@ class PluginTicketflowRelations extends CommonDBTM
             $validationErrors = $this->validateData($_POST);
             if (empty($validationErrors)) {
                 $result = $config->add($_POST);
-                $message = $result ? __('Relación guardada correctamente', 'ticketflow') : __('Error al guardar la relación', 'ticketflow');
+                $message = $result ? __('Relación guardada correctamente', PLUGIN_TICKETFLOW_DOMAIN) : __('Error al guardar la relación', PLUGIN_TICKETFLOW_DOMAIN);
                 $status = $result ? INFO : ERROR;
             } else {
                 $message = implode('<br>', $validationErrors);
@@ -91,7 +91,7 @@ class PluginTicketflowRelations extends CommonDBTM
             $validationErrors = $this->validateData($_POST);
             if (empty($validationErrors)) {
                 $result = $config->update($_POST);
-                $message = $result ? __('Relación actualizada correctamente', 'ticketflow') : __('Error al guardar la relación', 'ticketflow');
+                $message = $result ? __('Relación actualizada correctamente', PLUGIN_TICKETFLOW_DOMAIN) : __('Error al guardar la relación', PLUGIN_TICKETFLOW_DOMAIN);
                 $status = $result ? INFO : ERROR;
             } else {
                 $message = implode('<br>', $validationErrors);
@@ -100,7 +100,7 @@ class PluginTicketflowRelations extends CommonDBTM
             Session::addMessageAfterRedirect($message, false, $status);
         } elseif ($action === 'purge' && $config->canPurge()) {
             $result = $config->delete($_POST);
-            $message = $result ? __('Relación eliminada correctamente', 'ticketflow') : __('Error al eliminar la relación', 'ticketflow');
+            $message = $result ? __('Relación eliminada correctamente', PLUGIN_TICKETFLOW_DOMAIN) : __('Error al eliminar la relación', PLUGIN_TICKETFLOW_DOMAIN);
             $status = $result ? INFO : ERROR;
         } else {
             Html::displayRightError();

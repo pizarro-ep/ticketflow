@@ -48,7 +48,7 @@ class PluginTicketflowConfig extends CommonDBTM
             if (empty($validationErrors)) {
                 Config::setConfigurationValues(PLUGIN_TICKETFLOW_CONTEXT, ['container' => $_POST['container'], 'field' => $_POST['field']]);
 
-                $message = __('Configuración actualizada correctamente', 'ticketflow');
+                $message = __('Configuración actualizada correctamente', PLUGIN_TICKETFLOW_DOMAIN);
                 $status = INFO;
             } else {
                 $message = implode('<br>', $validationErrors);

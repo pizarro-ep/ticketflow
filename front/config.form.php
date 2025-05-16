@@ -11,10 +11,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Mostrar formulario
 Html::header(
-    __('Configuración | Ticketflow', 'ticketflow'),
+    __('Configuración | Ticketflow', PLUGIN_TICKETFLOW_DOMAIN),
     $_SERVER['PHP_SELF'],
     'plugins',
-    'ticketflow',
+    PLUGIN_TICKETFLOW_DOMAIN,
     'config',
     false
 );

@@ -2,12 +2,12 @@
 
 class PluginTicketflowTicketflow extends CommonDBTM
 {
-    public static $rightname = 'ticketflow';
+    public static $rightname = PLUGIN_TICKETFLOW_NAME;
     public $item = null;
     private $container = null;
     private $field = null;
     private $fieldContainerClass = null;
-    public $ticket_templates = 0;
+    public $ticket_templates = [];
 
     public static function getTypeName($nb = 0)
     {
@@ -180,7 +180,7 @@ class PluginTicketflowTicketflow extends CommonDBTM
             ]);
         }
 
-        Session::addMessageAfterRedirect(__('Piso asignado al ticket de forma exitosa', 'ticketflow'), true);
+        Session::addMessageAfterRedirect(__('Piso asignado al ticket de forma exitosa', PLUGIN_TICKETFLOW_DOMAIN), true);
         return true;
     }
 
@@ -243,7 +243,7 @@ class PluginTicketflowTicketflow extends CommonDBTM
 
                 if ($id_added) { // Crear relacion del ticket padre (actual) y el ticket hijo (creado)
                     $this->addRelationTicketByTicket($this->item->getID(), $id_added);
-                    Session::addMessageAfterRedirect(__('Ticket hijo creado de forma exitosa', 'ticketflow'), true);
+                    Session::addMessageAfterRedirect(__('Ticket hijo creado de forma exitosa', PLUGIN_TICKETFLOW_DOMAIN), true);
                 }
             }
         }

@@ -2,10 +2,10 @@
 include('../../../inc/includes.php');
 
 Html::header(
-   __('Relaciones TicketFlow', 'ticketflow'),
+   __('Relaciones TicketFlow', PLUGIN_TICKETFLOW_DOMAIN),
    $_SERVER['PHP_SELF'],
    'plugins',
-   'ticketflow',
+   PLUGIN_TICKETFLOW_DOMAIN,
    'relations'
 );
 
@@ -14,8 +14,8 @@ Session::checkRight('entity', READ);
 
 // Botón "Añadir"
 echo "<div class='justify-content-center d-flex gap-2'>";
-echo "<a class='vsubmit' href='relations.form.php'>" . __('Añadir', 'ticketflow') . "</a>";
-echo "<a class='vsubmit' href='config.form.php'>" . __('Configurar', 'ticketflow') . "</a>";
+echo "<a class='vsubmit' href='relations.form.php'>" . __('Añadir', PLUGIN_TICKETFLOW_DOMAIN) . "</a>";
+echo "<a class='vsubmit' href='config.form.php'>" . __('Configurar', PLUGIN_TICKETFLOW_DOMAIN) . "</a>";
 echo "</div><br>";
 $config->rawSearchOptions();
 $config->showList();

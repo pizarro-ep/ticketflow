@@ -7,18 +7,18 @@ function plugin_init_ticketflow()
    /** @var array $PLUGIN_HOOKS */
    global $PLUGIN_HOOKS;
 
-   $PLUGIN_HOOKS['csrf_compliant']['ticketflow'] = true;
+   $PLUGIN_HOOKS['csrf_compliant'][PLUGIN_TICKETFLOW_DOMAIN] = true;
    // Hook al crear un ticket
-   $PLUGIN_HOOKS['item_add']['ticketflow'] = ['Ticket' => 'ticketflow_item_add_called'];
-   $PLUGIN_HOOKS['item_update']['ticketflow'] = ['Ticket' => 'ticketflow_updateitem_called'];
-   //$PLUGIN_HOOKS['item_delete']['ticketflow'] = ['Ticket' => 'ticketflow_item_delete_called'];
-   $PLUGIN_HOOKS['item_purge']['ticketflow'] = ['Ticket' => 'ticketflow_item_purge_called'];
+   $PLUGIN_HOOKS['item_add'][PLUGIN_TICKETFLOW_DOMAIN] = ['Ticket' => 'ticketflow_item_add_called'];
+   $PLUGIN_HOOKS['item_update'][PLUGIN_TICKETFLOW_DOMAIN] = ['Ticket' => 'ticketflow_updateitem_called'];
+   //$PLUGIN_HOOKS['item_delete'][PLUGIN_TICKETFLOW_DOMAIN] = ['Ticket' => 'ticketflow_item_delete_called'];
+   $PLUGIN_HOOKS['item_purge'][PLUGIN_TICKETFLOW_DOMAIN] = ['Ticket' => 'ticketflow_item_purge_called'];
 
    // add link in plugin page
-   $PLUGIN_HOOKS['config_page']['ticketflow'] = 'front/config.form.php';
+   $PLUGIN_HOOKS['config_page'][PLUGIN_TICKETFLOW_DOMAIN] = 'front/config.form.php';
 
    // add entry to configuration menu
-   $PLUGIN_HOOKS['menu_toadd']['ticketflow'] = ['plugins' => 'PluginTicketflowMenu'];
+   $PLUGIN_HOOKS['menu_toadd'][PLUGIN_TICKETFLOW_DOMAIN] = ['plugins' => 'PluginTicketflowMenu'];
 
    Plugin::registerClass('PluginTicketflowTicketFlow');
    Plugin::registerClass('PluginTicketflowrRelations');
@@ -29,8 +29,8 @@ function plugin_init_ticketflow()
 function plugin_version_ticketflow()
 {
    return [
-      'name' => __('Ticket Flow', 'ticketflow'),
-      'version' => PLUGIN_FIELDS_VERSION,
+      'name' => __('Ticket Flow', PLUGIN_TICKETFLOW_DOMAIN),
+      'version' => PLUGIN_TICKETFLOW_VERSION,
       'author' => 'Eusebio Pizarro',
       'homepage' => 'https://github.com/pizarro-ep',
       'license' => 'GPLv2+',
@@ -38,7 +38,7 @@ function plugin_version_ticketflow()
          'glpi' => [
             'min' => PLUGIN_TICKETFLOW_MIN_GLPI_VERSION,
             'max' => PLUGIN_TICKETFLOW_MAX_GLPI_VERSION,
-            'dev' => false, //Required to allow 9.2-dev
+            'dev' => false,  
          ],
       ],
    ];

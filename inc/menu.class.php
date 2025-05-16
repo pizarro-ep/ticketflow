@@ -4,9 +4,9 @@ class PluginTicketflowMenu extends CommonGLPI
 {
     public static $rightname = 'entity';
 
-    public static function getMenuName()
+    public static function getMenuName(): string
     {
-        return __("Flujo de tickets", 'ticketflow');
+        return __("Flujo de tickets", PLUGIN_TICKETFLOW_DOMAIN);
     }
 
     public static function getMenuContent()
@@ -16,10 +16,10 @@ class PluginTicketflowMenu extends CommonGLPI
         }
 
         $menu['title'] = self::getMenuName();
-        $menu['page'] = Plugin::getPhpDir('ticketflow', false) . '/front/relations.php';
-        $menu['links']['search'] = Plugin::getPhpDir('ticketflow', false) . '/front/relations.php';
+        $menu['page'] = Plugin::getPhpDir(PLUGIN_TICKETFLOW_DOMAIN, false) . '/front/relations.php';
+        $menu['links']['search'] = Plugin::getPhpDir(PLUGIN_TICKETFLOW_DOMAIN, false) . '/front/relations.php';
         $menu['icon'] = 'fas fa-cogs';
-        $itemtypes = ['PluginTicketflowRelations' => 'ticketflow'];
+        $itemtypes = ['PluginTicketflowRelations' => PLUGIN_TICKETFLOW_DOMAIN];
 
         foreach ($itemtypes as $itemtype => $option) {
             $menu['options'][$option] = [

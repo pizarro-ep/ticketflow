@@ -31,9 +31,9 @@ function ticketflow_item_purge_called(CommonDBTM $item)
 
 function plugin_ticketflow_install()
 {
-    
+
     $plugin_fields = new Plugin();
-    $plugin_fields->getFromDBbyDir('ticketflow');
+    $plugin_fields->getFromDBbyDir(PLUGIN_TICKETFLOW_NAME);
     $version = $plugin_fields->fields['version'];
 
     $migration = new Migration($version);
@@ -58,10 +58,10 @@ function plugin_ticketflow_getAddSearchOptionsNew($itemtype)
 {
     $sopt = [];
 
-    if ($itemtype == 'ticketflow') { 
+    if ($itemtype == PLUGIN_TICKETFLOW_NAME) { 
         $sopt['table'] = PluginTicketflowRelations::getTable();
         $sopt['field'] = 'name';
-        $sopt['name'] = __('Flujo de tickets', 'ticketflow');
+        $sopt['name'] = __('Flujo de tickets', PLUGIN_TICKETFLOW_DOMAIN);
         $sopt['datatype'] = 'itemlink';
         $sopt['forcegroupby'] = true;
         $sopt['usehaving'] = true;
