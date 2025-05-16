@@ -1,0 +1,35 @@
+{
+  "name": "tudominio/tunombreplugin",
+  "description": "Plugin que permite gestionar relaciones entre categorías y plantillas de ticket en GLPI. También permite la sincronización del campo adicional Pisos (dropdown).",
+  "type": "glpi-plugin",
+  "license": "GPL-10.0-or-later",
+  "authors": [
+    {
+      "name": "Eusebio Pizarro",
+      "email": "epizarroaramburu@gmail.com",
+      "homepage": "https://github.com/pizarro-ep",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": ">=8.2",
+    "glpi/glpi": ">=10.0.0"
+  },
+  "extra": {
+    "plugin-name": "ticketflow",
+    "class": "PluginTicketflow",
+    "displayname": "TicketFlow - Relación Plantilla/Categoría",
+    "license": "GPLv2+",
+    "homepage": "https://github.com/tudominio/ticketflow",
+    "min-glpi-version": "10.0.0",
+    "max-glpi-version": "10.0.99",
+    "languages": {
+      "es_ES": "Español"
+    }
+  },
+  "autoload": {
+    "psr-4": {
+      "PluginTicketflow\\": "src/"
+    }
+  }
+}
