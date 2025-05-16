@@ -44,11 +44,23 @@ function plugin_version_ticketflow()
    ];
 }
 
-function plugin_ticketflow_check_prerequisites() {
+function plugin_ticketflow_check_prerequisites()
+{
+   $plugin = new Plugin();
+
+   if (!$plugin->isInstalled('fields') || !$plugin->isActivated('fields')) {
+      echo "<div class='center'><div class='error'>" .
+         "El plugin <strong>Fields</strong> debe estar instalado y habilitado para que <strong>Ticket Flow</strong> funcione correctamente." .
+         "</div></div>";
+      return false;
+   }
+
    return true;
 }
 
-function plugin_ticketflow_check_config($verbose = false) {
+
+function plugin_ticketflow_check_config($verbose = false)
+{
    return true;
 }
 

@@ -114,21 +114,22 @@ class PluginTicketflowTicketflow extends CommonDBTM
 
         $this->initialize(); // Inicializar contenedor y campo
 
-        $ticketfloor = $this->fieldContainerClass; // Instanciar contenedor
-        if (!$ticketfloor)
+        $ticketContainerInstance = $this->fieldContainerClass; // Instanciar contenedor
+        if (!$ticketContainerInstance)
             return false; // Terminar el flujo si no se encuentra el contenedor
 
-        if (!empty($this->field) && ($this->field->fields['type'] !== 'dropdown'))
+        if (!$this->field || $this->field->fields['type'] !== 'dropdown')
             return false; // Terminar el flujo is el campo no es de tipo dropdown
 
         // Verificar si el campo de piso aun no ha sido llenado
-        if (count($ticketfloor->find(['items_id' => $this->item->getID(), 'itemtype' => Ticket::getType(), 'plugin_fields_containers_id' => $this->container->getID(), $this->getNameFieldDropdownId() => ['>', 0]])) > 0)
+        if (count($ticketContainerInstance->find(['items_id' => $this->item->getID(), 'itemtype' => Ticket::getType(), 'plugin_fields_containers_id' => $this->container->getID(), $this->getNameFieldDropdownId() => ['>', 0]])) > 0)
             return false;
 
         $current_ticket = new Ticket();
         $current_ticket->getFromDB($this->item->getID());
         $actors = $current_ticket->getActorsForType(1); // Solo los actores solicitantes
 
+        $floor = null;
         foreach ($actors as $actor) {
             if (isset($actor['items_id'])) {
                 $user = new User();
@@ -139,7 +140,7 @@ class PluginTicketflowTicketflow extends CommonDBTM
                         $current_ticket->update($this->item->fields);
                     }
                     if (!empty($user->fields['comment'])) {
-                        $floor = trim($user->fields['comment']); // Obtener el piso del solicitante
+                        $floor = trim($user->fields['comment']); // Obtener el piso del perfil del solicitante (campo 'comment')
                         break; // Finalizar blucle al encontrar el piso para el solicitante
                     }
                 }
@@ -166,11 +167,11 @@ class PluginTicketflowTicketflow extends CommonDBTM
             return false; // Terminar el flujo si no se pudo obtener el ID del piso
 
         // Verificar si el piso ya ha sido asignado al ticket 1. Existe: Actualizar. 2. No existe: Agregar
-        if ($ticketfloor->getFromDBByCrit(['items_id' => $this->item->getID(), 'itemtype' => $this->item::getType(), 'plugin_fields_containers_id' => $this->container->getID()])) {
-            $ticketfloor->fields[$this->getNameFieldDropdownId()] = $floor_id;
-            $ticketfloor->update($ticketfloor->fields);
+        if ($ticketContainerInstance->getFromDBByCrit(['items_id' => $this->item->getID(), 'itemtype' => $this->item::getType(), 'plugin_fields_containers_id' => $this->container->getID()])) {
+            $ticketContainerInstance->fields[$this->getNameFieldDropdownId()] = $floor_id;
+            $ticketContainerInstance->update($ticketContainerInstance->fields);
         } else {
-            $ticketfloor->add([
+            $ticketContainerInstance->add([
                 'items_id' => $this->item->getID(),
                 'itemtype' => Ticket::getType(),
                 'plugin_fields_containers_id' => $this->container->getID(),
@@ -191,11 +192,11 @@ class PluginTicketflowTicketflow extends CommonDBTM
 
     public function deleteFloorTicket()
     {
-        $ticketfloor = $this->fieldContainerClass;
-        if (!$ticketfloor)
+        $ticketContainerInstance = $this->fieldContainerClass;
+        if (!$ticketContainerInstance)
             return false;
 
-        $ticketfloor->deleteByCriteria(['items_id' => $this->item->getID(), 'itemtype' => Ticket::getType(), 'plugin_fields_containers_id' => $this->container->getID()]);
+        $ticketContainerInstance->deleteByCriteria(['items_id' => $this->item->getID(), 'itemtype' => Ticket::getType(), 'plugin_fields_containers_id' => $this->container->getID()]);
     }
 
 
@@ -206,11 +207,11 @@ class PluginTicketflowTicketflow extends CommonDBTM
             return false;
 
         // Obtener la cantidad de tickets hijos que se pueden crear con la plantilla seleccionada
-        $count_ticket_tamplates = count($this->ticket_templates);
+        $count_ticket_templates = count($this->ticket_templates);
         foreach ($this->ticket_templates as $value) {
             $ticket_template = new TicketTemplate();
             if ($ticket_template->getFromDB($value['template_id'])) {
-                if (!$this->canCreateTicketChild($count_ticket_tamplates, $value['status']))
+                if (!$this->canCreateTicketChild($count_ticket_templates, $value['status']))
                     continue; // Pasar al siguiente template si no se puede crear con este template
 
                 // Obtener todos los campos predefinidos de la plantilla relacionada a la categoría seleccionada
@@ -230,17 +231,18 @@ class PluginTicketflowTicketflow extends CommonDBTM
                             $field_to_add['type'] = $field['value'];
                     }
                 }
-                if (isset($field_to_add['itilcategories_id']) && $field_to_add['itilcategories_id'] == $this->item->fields['itilcategories_id'])
-                    continue; // Pasar al siguiente template si la plantilla es de la misma categoría que el ticket padre
+                if (isset($field_to_add['itilcategories_id']) && $field_to_add['itilcategories_id'] == $this->item->fields['itilcategories_id']) 
+                    continue; // Evitar crear ticket hijo con misma categoría del ticket padre
+
 
                 unset($field_to_add['date']); // No se puede copiar la fecha de creación
 
                 // Crear el ticket desde la plantilla
                 $new_ticket = new Ticket();
-                $id_addeted = $new_ticket->add($field_to_add);
+                $id_added = $new_ticket->add($field_to_add);
 
-                if ($id_addeted) { // Crear relacion del ticket padre (actual) y el ticket hijo (creado)
-                    $this->addRelationTicketByTicket($this->item->getID(), $id_addeted);
+                if ($id_added) { // Crear relacion del ticket padre (actual) y el ticket hijo (creado)
+                    $this->addRelationTicketByTicket($this->item->getID(), $id_added);
                     Session::addMessageAfterRedirect(__('Ticket hijo creado de forma exitosa', 'ticketflow'), true);
                 }
             }
@@ -261,16 +263,14 @@ class PluginTicketflowTicketflow extends CommonDBTM
         $this->ticket_templates = array_values($relations);
         return true;
     }
-    public function canCreateTicketChild(&$count_ticket_tamplates, $status = null): bool
+    public function canCreateTicketChild($count_ticket_templates, $status = null): bool
     {
         if ($this->item->fields['status'] !== $status)
             return false;
 
-        // Verificar si se puede crear ticket hijo
-        // Caso 1: El ticket padre no tiene ticket hijo
-        // Caso 2: El ticket padre ya tiene ticket hijo creado, pero no para esa plantilla
+        // Verificar si se puede crear ticket hijo 
         $tt = new Ticket_Ticket();
-        return count($tt->find(['tickets_id_2' => $this->item->getID(), 'link' => Ticket_Ticket::SON_OF])) < $count_ticket_tamplates;
+        return count($tt->find(['tickets_id_2' => $this->item->getID(), 'link' => Ticket_Ticket::SON_OF])) < $count_ticket_templates;
     }
 
 

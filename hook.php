@@ -31,6 +31,7 @@ function ticketflow_item_purge_called(CommonDBTM $item)
 
 function plugin_ticketflow_install()
 {
+    
     $plugin_fields = new Plugin();
     $plugin_fields->getFromDBbyDir('ticketflow');
     $version = $plugin_fields->fields['version'];
