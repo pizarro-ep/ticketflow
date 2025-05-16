@@ -19,6 +19,13 @@
    <authors>
       <author>Eusebio Pizarro</author>
    </authors> 
+   <versions>
+      <version>
+         <num>1.0</num>
+         <compatibility>~10.0.0</compatibility>
+         <download_url>https://github.com/pizarro-ep/ticketflow/archive/refs/heads/main.zip</download_url>
+      </version>
+   </versions>
    <langs>
       <lang>es_ES</lang>
    </langs>
