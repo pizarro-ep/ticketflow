@@ -6,13 +6,13 @@ Html::header(
    $_SERVER['PHP_SELF'],
    'plugins',
    'pluginticketflowmenu',
-   'ticketflowrelations'
+   'ticketflowrelation'
 );
 
-$config = new PluginTicketflowRelations();
+$relation = new PluginTicketflowRelation();
 Session::checkRight('entity', READ); 
    
-$config->rawSearchOptions();
-$config->showList();
+$relation->rawSearchOptions();
+Search::show('PluginTicketflowRelation'); 
 
 Html::footer();

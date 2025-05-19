@@ -5,7 +5,7 @@
  Ticket flow plugin for GLPI
  Copyright (C) 2025 by the Ticket Flow Development Team.
 
- https://github.com/juanca87/ticketflow
+ https://github.com/pizarro-ep/ticketflow
  -------------------------------------------------------------------------
 
  LICENSE

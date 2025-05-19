@@ -131,21 +131,28 @@ class PluginTicketflowTicketflow extends CommonDBTM
 
         $floor = null;
         foreach ($actors as $actor) {
-            if (isset($actor['items_id'])) {
-                $user = new User();
-                // Verificar que exista usuario con el id en cuestión
-                if ($user->getFromDB($actor['items_id'])) {
-                    if (empty($this->item->fields['locations_id']) && !empty($user->fields['locations_id'])) {
-                        $this->item->fields['locations_id'] = $user->fields['locations_id'];
-                        $current_ticket->update($this->item->fields);
-                    }
-                    if (!empty($user->fields['comment'])) {
-                        $floor = trim($user->fields['comment']); // Obtener el piso del perfil del solicitante (campo 'comment')
-                        break; // Finalizar blucle al encontrar el piso para el solicitante
-                    }
-                }
+            if (!isset($actor['items_id']))
+                continue;
+
+            $user = new User();
+            if (!$user->getFromDB($actor['items_id']))
+                continue;
+
+            if (empty($this->item->fields['locations_id']) && !empty($user->fields['locations_id'])) {
+                $this->item->fields['locations_id'] = $user->fields['locations_id'];
+                $current_ticket->update($this->item->fields);
+            }
+
+            if (empty($floor) && !empty($user->fields['comment'])) {
+                $floor = trim($user->fields['comment']);
+            }
+
+            // Si ya tengo ambos, puedo salir
+            if (!empty($this->item->fields['locations_id']) && !empty($floor)) {
+                break;
             }
         }
+
 
         if (empty($floor)) // Terminar el flujo si no se pudo obtener el piso del solicitante
             return false;
@@ -210,7 +217,7 @@ class PluginTicketflowTicketflow extends CommonDBTM
         $count_ticket_templates = count($this->ticket_templates);
         foreach ($this->ticket_templates as $value) {
             $ticket_template = new TicketTemplate();
-            if ($ticket_template->getFromDB($value['template_id'])) {
+            if ($ticket_template->getFromDB($value['tickettemplates_id'])) {
                 if (!$this->canCreateTicketChild($count_ticket_templates, $value['status']))
                     continue; // Pasar al siguiente template si no se puede crear con este template
 
@@ -231,7 +238,7 @@ class PluginTicketflowTicketflow extends CommonDBTM
                             $field_to_add['type'] = $field['value'];
                     }
                 }
-                if (isset($field_to_add['itilcategories_id']) && $field_to_add['itilcategories_id'] == $this->item->fields['itilcategories_id']) 
+                if (isset($field_to_add['itilcategories_id']) && $field_to_add['itilcategories_id'] == $this->item->fields['itilcategories_id'])
                     continue; // Evitar crear ticket hijo con misma categoría del ticket padre
 
 
@@ -255,7 +262,7 @@ class PluginTicketflowTicketflow extends CommonDBTM
     {
         $itilcategories_id = $this->item->fields['itilcategories_id'];
 
-        $ptr = new PluginTicketflowRelations();
+        $ptr = new PluginTicketflowRelation();
         $relations = $ptr->find(['itilcategories_id' => $itilcategories_id], []);
         if (count($relations) === 0) {
             return false;
@@ -273,13 +280,11 @@ class PluginTicketflowTicketflow extends CommonDBTM
         return count($tt->find(['tickets_id_2' => $this->item->getID(), 'link' => Ticket_Ticket::SON_OF])) < $count_ticket_templates;
     }
 
-
     private function addRelationTicketByTicket($parent_id, $child_id)
     {
         $s = new Ticket_Ticket();
         return $s->add(['tickets_id_1' => $child_id, 'tickets_id_2' => $parent_id, 'link' => Ticket_Ticket::SON_OF]);
     }
-
 
     /**
      * Summary of installBaseData
@@ -296,7 +301,7 @@ class PluginTicketflowTicketflow extends CommonDBTM
         $default_collation = DBConnection::getDefaultCollation();
         $default_key_sign = DBConnection::getDefaultPrimaryKeySignOption();
 
-        $table = PluginTicketflowRelations::getTable();
+        $table = PluginTicketflowRelation::getTable();
 
         if (!$DB->tableExists($table)) {
             $migration->displayMessage(sprintf(__('Installing %s'), $table));
@@ -305,12 +310,12 @@ class PluginTicketflowTicketflow extends CommonDBTM
                   `id`                          INT                 {$default_key_sign} NOT NULL AUTO_INCREMENT,
                   `name`                        VARCHAR(255)        NOT NULL,
                   `itilcategories_id`           INT                 UNSIGNED NOT NULL,
-                  `template_id`                 INT                 UNSIGNED NOT NULL,
+                  `tickettemplates_id`                 INT                 UNSIGNED NOT NULL,
                   `status`                      INT                 NOT NULL,
                   `created_at`                  TIMESTAMP           NOT NULL DEFAULT CURRENT_TIMESTAMP,
                   `updated_at`                  TIMESTAMP           NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
                   PRIMARY KEY (`id`),
-                  UNIQUE KEY `itilcategories_id_template_id` (`itilcategories_id`, `template_id`)
+                  UNIQUE KEY `itilcategories_id_tickettemplates_id` (`itilcategories_id`, `tickettemplates_id`)
                 ) ENGINE=InnoDB DEFAULT CHARSET=$default_charset COLLATE=$default_collation ROW_FORMAT=DYNAMIC;";
             $DB->doQuery($query) or die($DB->error());
         }
@@ -322,7 +327,7 @@ class PluginTicketflowTicketflow extends CommonDBTM
             $migration->addConfig(['field' => '0'], PLUGIN_TICKETFLOW_CONTEXT);
         }
         if (Config::getConfigurationValue(PLUGIN_TICKETFLOW_CONTEXT, 'type') === null) {
-            $migration->addConfig(['type' => ''], PLUGIN_TICKETFLOW_CONTEXT);
+            $migration->addConfig(['type' => 'dropdown'], PLUGIN_TICKETFLOW_CONTEXT);
         }
 
         return true;
@@ -337,15 +342,11 @@ class PluginTicketflowTicketflow extends CommonDBTM
         /** @var DBmysql $DB */
         global $DB;
 
-        $table = PluginTicketflowRelations::getTable();
+        $table = PluginTicketflowRelation::getTable();
         if ($DB->tableExists($table))
             $DB->doQuery("DROP TABLE IF EXISTS `{$table}`");
 
         $table = PluginTicketflowConfig::getTable();
-        if ($DB->tableExists($table))
-            $DB->doQuery("DROP TABLE IF EXISTS `{$table}`");
-
-        $table = PluginTicketflowRelations::getTable();
         if ($DB->tableExists($table))
             $DB->doQuery("DROP TABLE IF EXISTS `{$table}`");
 

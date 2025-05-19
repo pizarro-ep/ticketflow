@@ -21,7 +21,7 @@ function plugin_init_ticketflow()
    $PLUGIN_HOOKS['menu_toadd'][PLUGIN_TICKETFLOW_DOMAIN] = ['plugins' => 'PluginTicketflowMenu'];
 
    Plugin::registerClass('PluginTicketflowTicketFlow');
-   Plugin::registerClass('PluginTicketflowrRelations');
+   Plugin::registerClass('PluginTicketflowRelation');
    Plugin::registerClass('PluginTicketflowConfig');
    Plugin::registerClass('PluginTicketflowMenu');
 }

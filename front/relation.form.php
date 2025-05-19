@@ -1,16 +1,16 @@
 <?php
 include(__DIR__ . '/../../../inc/includes.php');
 
-$relations = new PluginTicketflowRelations();
+$relation = new PluginTicketflowRelation();
 
 // Procesar la acción (add o update)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['add'])) {
-        $relations->processForm('add', $relations);
+        $relation->processForm('add', $relation);
     } elseif (isset($_POST['update'])) {
-        $relations->processForm('update', $relations);
+        $relation->processForm('update', $relation);
     } elseif (isset($_POST['purge'])) {
-        $relations->processForm('purge', $relations);
+        $relation->processForm('purge', $relation);
         Html::redirect($_SERVER['PHP_SELF']);
     }
     Html::redirect($_SERVER['PHP_SELF'] . (isset($_POST['id']) ? '?id=' . $_POST['id'] : ''));
@@ -22,14 +22,14 @@ Html::header(
     $_SERVER['PHP_SELF'],
     'plugins',
     'pluginticketflowmenu',
-    'ticketflowrelations',
+    'ticketflowrelation',
 );
 
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
-    $relations->getFromDB($_GET['id']);
+    $relation->getFromDB($_GET['id']);
 }
 
-$relations->showForm($_GET['id'] ?? 0, ['formtitle' => 'Relación de Ticketflow (Categoría - Plantilla)']);
+$relation->showForm($_GET['id'] ?? 0, ['formtitle' => 'Relación de Ticketflow (Categoría - Plantilla)']);
 
 Html::footer();
 ?>

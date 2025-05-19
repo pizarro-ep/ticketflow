@@ -16,9 +16,9 @@ class PluginTicketflowMenu extends CommonGLPI
         }
 
         $menu['title'] = self::getMenuName();
-        $menu['page'] = Plugin::getPhpDir(PLUGIN_TICKETFLOW_DOMAIN, false) . '/front/relations.php';
+        $menu['page'] = Plugin::getPhpDir(PLUGIN_TICKETFLOW_DOMAIN, false) . '/front/relation.php';
         $menu['icon'] = 'fas fa-cogs';
-        $itemtypes = ['PluginTicketflowRelations' => 'ticketflowrelations', 'PluginTicketflowConfig' => 'config'];
+        $itemtypes = ['PluginTicketflowRelation' => 'ticketflowrelation', 'PluginTicketflowConfig' => 'config'];
 
         foreach ($itemtypes as $itemtype => $option) {
             $menu['options'][$option] = [

@@ -59,7 +59,7 @@ function plugin_ticketflow_getAddSearchOptionsNew($itemtype)
     $sopt = [];
 
     if ($itemtype == PLUGIN_TICKETFLOW_NAME) { 
-        $sopt['table'] = PluginTicketflowRelations::getTable();
+        $sopt['table'] = PluginTicketflowRelation::getTable();
         $sopt['field'] = 'name';
         $sopt['name'] = __('Flujo de tickets', PLUGIN_TICKETFLOW_DOMAIN);
         $sopt['datatype'] = 'itemlink';

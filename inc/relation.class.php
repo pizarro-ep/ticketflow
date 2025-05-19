@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Class PluginTicketflowRelations
+ * Class PluginTicketflowRelation
  */
-class PluginTicketflowRelations extends CommonDBTM
+class PluginTicketflowRelation extends CommonDBTM
 {
-    public static $rightname =PLUGIN_TICKETFLOW_NAME;
+    public static $rightname = PLUGIN_TICKETFLOW_NAME;
 
     public static function getTypeName($nb = 0)
     {
@@ -72,6 +72,92 @@ class PluginTicketflowRelations extends CommonDBTM
         return false;
     }
 
+    public function rawSearchOptions()
+    {
+        $tab = [];
+
+        $tab[] = [
+            'id' => 'common',
+            'name' => __('Características generales')
+        ];
+
+        $tab[] = [
+            'id' => 1,
+            'table' => self::getTable(),
+            'field' => 'name',
+            'name' => __('Nombre'),
+            'datatype' => 'itemlink',
+            'massiveaction' => false,
+        ];
+
+        $tab[] = [
+            'id' => 2,
+            'table' => ITILCategory::getTable(),
+            'field' => 'name',
+            'name' => __('Categoría', 'ticketflow'),
+            'datatype' => 'itemlink',
+            'itemtype' => 'ITILCategory',
+        ];
+
+        $tab[] = [
+            'id' => 3,
+            'table' => ITILCategory::getTable(),
+            'field' => 'completename',
+            'name' => __('Nombre Completo de Categoría', 'ticketflow'),
+            'datatype' => 'itemlink',
+            'itemtype' => 'ITILCategory',
+        ];
+
+        $tab[] = [
+            'id' => 4,
+            'table' => TicketTemplate::getTable(),
+            'field' => 'name',
+            'name' => __('Plantilla', 'ticketflow'),
+            'datatype' => 'itemlink',
+            'itemtype' => 'TicketTemplate',
+        ];
+        $tab[] = [
+            'id' => 5,
+            'table' => self::getTable(),
+            'field' => 'status',
+            'name' => __('Estado'),
+            'searchtype' => 'equals',
+            'datatype' => 'specific'
+        ];
+
+        return $tab;
+    }
+
+    static function getSpecificValueToDisplay($field, $values, array $options = array())
+    {
+
+        if (!is_array($values)) {
+            $values = array($field => $values);
+        }
+        switch ($field) {
+            case 'status':
+                return Ticket::getStatusIcon($values[$field]) . " " . Ticket::getStatus($values[$field]);
+
+        }
+        return parent::getSpecificValueToDisplay($field, $values, $options);
+    }
+
+    static function getSpecificValueToSelect($field, $name = '', $values = '', array $options = array())
+    {
+
+        if (!is_array($values)) {
+            $values = array($field => $values);
+        } 
+
+        switch ($field) {
+            case 'status':
+                $options['name'] = $name;
+                $options['value'] = $values[$field];
+                return Ticket::dropdownStatus($options);
+        }
+        return parent::getSpecificValueToSelect($field, $name, $values, $options);
+    }
+
 
 
     public function processForm($action, $config)
@@ -114,7 +200,7 @@ class PluginTicketflowRelations extends CommonDBTM
         if (empty($data['name']))
             $errors[] = 'El campo nombre es requerido.';
         // Validar template
-        if (!is_numeric($data['template_id']) || $data['template_id'] <= 0)
+        if (!is_numeric($data['tickettemplates_id']) || $data['tickettemplates_id'] <= 0)
             $errors[] = 'Seleccione una plantilla válida.';
         // Validar category
         if (!is_numeric($data['itilcategories_id']) || $data['itilcategories_id'] <= 0)
@@ -164,8 +250,8 @@ class PluginTicketflowRelations extends CommonDBTM
         echo "<td>" . __('Plantilla de ticket') . "</td>";
         echo "<td>";
         Dropdown::show('TicketTemplate', [
-            'name' => 'template_id',
-            'value' => $this->fields["template_id"]
+            'name' => 'tickettemplates_id',
+            'value' => $this->fields["tickettemplates_id"]
         ]);
         echo "</>";
         echo "</tr>";
@@ -179,60 +265,11 @@ class PluginTicketflowRelations extends CommonDBTM
         ]);
         echo "</td>";
         echo "</tr>";
-        $options = [
-            'candel' => $ID > 0,
-            'addbuttons' => [
-                'ss ' => [
-                    'text' => __('Eliminar personalizado'),
-                    'icon' => 'ti ti-trash', // opcional
-                    'class' => 'btn btn-danger me-2' // clase Bootstrap para botón rojo
-                ]
-            ]
-        ];
-        $this->showFormButtons([
-            'candel' => true,
-            'canedit' => true,
-        ]);
+        $this->showFormButtons($options);
 
 
         Html::closeForm();
 
         return true;
-    }
-
-    public function showList()
-    {
-        global $DB;
-
-        $result = $DB->request([
-            "SELECT" => [
-                "glpi_plugin_ticketflow_relations.*",
-                "glpi_itilcategories.name AS category_name",
-                "glpi_tickettemplates.name AS template_name"
-            ],
-            "FROM" => "glpi_plugin_ticketflow_relations",
-            "LEFT JOIN" => [
-                "glpi_itilcategories" => ["FKEY" => ["glpi_plugin_ticketflow_relations" => "itilcategories_id", "glpi_itilcategories" => "id"]],
-                "glpi_tickettemplates" => ["FKEY" => ["glpi_plugin_ticketflow_relations" => "template_id", "glpi_tickettemplates" => "id"]]
-            ]
-        ]);
-
-        echo "<div class='center'>";
-        echo "<table class='tab_cadre_fixehov'>";
-        echo "<tr class='noHover'><th>ID</th><th>Nombre</th><th>Categoría ITIL</th><th>PlantillaTicket</th><th>Estado</th></tr>";
-
-        foreach ($result as $row) {
-            $edit_url = "relations.form.php?id=" . $row['id'];
-            echo "<tr>";
-            echo "<td>" . $row['id'] . "</td>";
-            echo "<td>" . (self::canUpdate() ? "<a class='py-3' href='$edit_url'>" . $row['name'] . "</a>" : $row['name']) . "</td>";
-            echo "<td>" . $row['category_name'] . "</td>";
-            echo "<td>" . $row['template_name'] . "</td>";
-            echo "<td>" . Ticket::getStatusIcon($row['status']) . " " . Ticket::getStatus($row['status']) . "</td>";
-            echo "</tr>";
-        }
-
-        echo "</table>";
-        echo "</div>";
     }
 }
