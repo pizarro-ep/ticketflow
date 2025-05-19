@@ -17,16 +17,15 @@ class PluginTicketflowMenu extends CommonGLPI
 
         $menu['title'] = self::getMenuName();
         $menu['page'] = Plugin::getPhpDir(PLUGIN_TICKETFLOW_DOMAIN, false) . '/front/relations.php';
-        $menu['links']['search'] = Plugin::getPhpDir(PLUGIN_TICKETFLOW_DOMAIN, false) . '/front/relations.php';
         $menu['icon'] = 'fas fa-cogs';
-        $itemtypes = ['PluginTicketflowRelations' => PLUGIN_TICKETFLOW_DOMAIN];
+        $itemtypes = ['PluginTicketflowRelations' => 'ticketflowrelations', 'PluginTicketflowConfig' => 'config'];
 
         foreach ($itemtypes as $itemtype => $option) {
             $menu['options'][$option] = [
                 'title' => $itemtype::getTypeName(2),
                 'page' => $itemtype::getSearchURL(false),
                 'links' => [
-                    'search' => $itemtype::getSearchURL(false),
+                   'config' => Plugin::getPhpDir(PLUGIN_TICKETFLOW_DOMAIN, false) . '/front/config.form.php',
                 ],
             ];
 

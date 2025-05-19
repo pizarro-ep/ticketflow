@@ -21,8 +21,8 @@ Html::header(
     __('Relación de Ticketflow', PLUGIN_TICKETFLOW_DOMAIN),
     $_SERVER['PHP_SELF'],
     'plugins',
-    PLUGIN_TICKETFLOW_DOMAIN,
-    'relations',
+    'pluginticketflowmenu',
+    'ticketflowrelations',
 );
 
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {

@@ -9,7 +9,7 @@ class PluginTicketflowRelations extends CommonDBTM
 
     public static function getTypeName($nb = 0)
     {
-        return _n('TicketFlow', 'TicketFlows', $nb);
+        return __('Relación', PLUGIN_TICKETFLOW_DOMAIN);
     }
 
     public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
@@ -225,7 +225,7 @@ class PluginTicketflowRelations extends CommonDBTM
             $edit_url = "relations.form.php?id=" . $row['id'];
             echo "<tr>";
             echo "<td>" . $row['id'] . "</td>";
-            echo "<td><a class='py-3' href='$edit_url'>" . $row['name'] . "</a></td>";
+            echo "<td>" . (self::canUpdate() ? "<a class='py-3' href='$edit_url'>" . $row['name'] . "</a>" : $row['name']) . "</td>";
             echo "<td>" . $row['category_name'] . "</td>";
             echo "<td>" . $row['template_name'] . "</td>";
             echo "<td>" . Ticket::getStatusIcon($row['status']) . " " . Ticket::getStatus($row['status']) . "</td>";

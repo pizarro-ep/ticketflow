@@ -14,9 +14,7 @@ Html::header(
     __('Configuración | Ticketflow', PLUGIN_TICKETFLOW_DOMAIN),
     $_SERVER['PHP_SELF'],
     'plugins',
-    PLUGIN_TICKETFLOW_DOMAIN,
-    'config',
-    false
+    'pluginticketflowmenu',
 );
 
 

@@ -107,7 +107,7 @@ class PluginTicketflowConfig extends CommonDBTM
         echo "<td colspan='2'>";
         $container = Config::getConfigurationValue(PLUGIN_TICKETFLOW_CONTEXT, 'container') ?? 0;
         Dropdown::showFromArray('container', $dropdown_data, ['value' => $container, 'rand' => $rand]);
-        echo Html::showToolTip("Contenedor de campos (Plugin Fields)", ['title' => 'dfssss', 'link' => Plugin::getWebDir('fields') . '/front/container.php']);
+        echo Html::showToolTip("Contenedor de campos (Plugin Fields)", ['title' => 'dfssss', 'link' => Plugin::getWebDir('fields') . '/front/container.form.php']);
         echo '</td>';
         echo '</tr>';
 
