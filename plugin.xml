@@ -15,7 +15,7 @@
    <homepage>https://github.com/pizarro-ep/ticketflow</homepage>
    <download>https://github.com/pizarro-ep/ticketflow/archive/refs/heads/main.zip</download>
    <issues>https://github.com/pizarro-ep/ticketflow/issues</issues>
-   <readme>https://github.com/pizarro-ep/ticketflow/README.md</readme>
+   <readme>https://raw.githubusercontent.com/pizarro-ep/ticketflow/refs/heads/main/README.md</readme>
    <authors>
       <author>Eusebio Pizarro</author>
    </authors> 
